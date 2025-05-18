@@ -17,4 +17,3 @@ The server stores data in the `data/` directory using JSON files. Endpoints incl
 
 This is a minimal prototype implementing a subset of the design specification.
 
-For a detailed front-end specification, see [docs/frontend_prd.md](docs/frontend_prd.md).
