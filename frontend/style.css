@@ -34,3 +34,10 @@ form input, form textarea {
 form button {
   margin-top: 1em;
 }
+
+.search-input {
+  margin-bottom: 0.5em;
+  width: 100%;
+  padding: 0.5em;
+  box-sizing: border-box;
+}
