@@ -5,6 +5,7 @@ const path = require('path');
 const DATA_DIR = path.join(__dirname, 'data');
 const STADIUMS_FILE = path.join(DATA_DIR, 'stadiums.json');
 const MEALS_FILE = path.join(DATA_DIR, 'meals.json');
+const FRONTEND_DIR = path.join(__dirname, 'frontend');
 
 function ensureDataFiles() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
@@ -97,6 +98,21 @@ function router(req, res) {
   }
   if (req.method === 'POST' && req.url.startsWith('/meals')) {
     return createMeal(req, res);
+  }
+  // serve static files from the frontend directory
+  if (req.method === 'GET') {
+    const reqPath = req.url === '/' ? '/index.html' : req.url;
+    const filePath = path.join(FRONTEND_DIR, reqPath);
+    if (fs.existsSync(filePath)) {
+      const ext = path.extname(filePath).toLowerCase();
+      let contentType = 'text/plain';
+      if (ext === '.html') contentType = 'text/html';
+      else if (ext === '.css') contentType = 'text/css';
+      else if (ext === '.js') contentType = 'text/javascript';
+      const fileContent = fs.readFileSync(filePath);
+      res.writeHead(200, { 'Content-Type': contentType });
+      return res.end(fileContent);
+    }
   }
   res.writeHead(404);
   res.end('Not Found');
