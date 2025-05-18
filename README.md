@@ -16,3 +16,4 @@ The server stores data in the `data/` directory using JSON files. Endpoints incl
 - `POST /meals` – create a meal
 
 This is a minimal prototype implementing a subset of the design specification.
+
