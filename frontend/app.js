@@ -27,11 +27,26 @@ function StadiumList() {
 
 function MealList() {
   const [meals, setMeals] = useState([]);
+  const [search, setSearch] = useState('');
   useEffect(() => {
-    fetch('/meals').then(r => r.json()).then(setMeals);
-  }, []);
+    const url = search ? `/meals?search=${encodeURIComponent(search)}` : '/meals';
+    fetch(url).then(r => r.json()).then(setMeals);
+  }, [search]);
   return React.createElement('div', { className: 'container' },
-    meals.map(m => React.createElement('div', { key: m.id, className: 'list-item' }, `${m.food_name} @ ${m.price_usd}`))
+    React.createElement('input', {
+      type: 'search',
+      placeholder: 'Search meals',
+      className: 'search-input',
+      value: search,
+      onChange: e => setSearch(e.target.value)
+    }),
+    meals.map(m =>
+      React.createElement('div', { key: m.id, className: 'list-item' },
+        React.createElement('div', null, `${m.food_name} @ ${m.price_usd}`),
+        m.rating ? React.createElement('div', null, `Rating: ${m.rating}`) : null,
+        m.notes ? React.createElement('div', null, m.notes) : null
+      )
+    )
   );
 }
 
@@ -59,11 +74,18 @@ function AddStadium({ onDone }) {
 function AddMeal({ onDone }) {
   const [food, setFood] = useState('');
   const [price, setPrice] = useState('');
+  const [rating, setRating] = useState('');
+  const [notes, setNotes] = useState('');
   function submit() {
     fetch('/meals', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ food_name: food, price_usd: parseFloat(price) })
+      body: JSON.stringify({
+        food_name: food,
+        price_usd: parseFloat(price),
+        rating: parseInt(rating, 10),
+        notes
+      })
     }).then(() => onDone('Meals'));
   }
   return React.createElement('div', { className: 'container' },
@@ -72,6 +94,16 @@ function AddMeal({ onDone }) {
       React.createElement('input', { value: food, onChange: e => setFood(e.target.value) }),
       React.createElement('label', null, 'Price'),
       React.createElement('input', { value: price, onChange: e => setPrice(e.target.value) }),
+      React.createElement('label', null, 'Rating (1-5)'),
+      React.createElement('input', {
+        type: 'number',
+        min: 1,
+        max: 5,
+        value: rating,
+        onChange: e => setRating(e.target.value)
+      }),
+      React.createElement('label', null, 'Notes'),
+      React.createElement('textarea', { value: notes, onChange: e => setNotes(e.target.value) }),
       React.createElement('button', { type: 'submit' }, 'Save')
     )
   );
